@@ -121,3 +121,68 @@ The project directory. This session's working directory was the home folder
 (`/Users/samudrajhinukmandi`). Starting a git repository there would have tracked
 Library files, Downloads and credential files, so the project was created at
 `~/Documents/verge` instead. Move it anywhere; nothing depends on the location.
+
+---
+
+## Phase 1 — correction to Postgres, schema caught up to spec
+
+The full build blueprint (now `CLAUDE.md`) corrected the stack from SQLite to
+Postgres, and defined `bathrooms`, `facing`, and `shotList` on `Property` —
+none of which the schema above had yet. This phase updates Phase 1 in place to
+match, keeping the original two commits as real history rather than rewriting
+them.
+
+- Decision: Switched the database to Postgres, hosted on Neon, region
+  `ap-southeast-1` (Singapore — the closest Neon offers to Kolkata).
+- Why: SQLite writes to a local file. Vercel's filesystem is read-only in
+  production, so saving an enquiry there would silently fail.
+- Alternative rejected: Rewriting history to look like Postgres was chosen from
+  the start. Rejected — the true version (built on SQLite, caught the
+  production issue, corrected it) is a stronger interview answer than a clean
+  history that isn't accurate.
+- For production I would change: Nothing further — a hosted Postgres instance
+  is already the production-appropriate choice.
+
+- Decision: Added `bathrooms` (Int), `facing` (String), and `shotList` (Json,
+  an array of `{ time, label }`) to `Property`. Renamed `title`→`name` and
+  `location`→`locality` to match the spec, and removed the interim `caption`
+  field it replaces.
+- Why: The shot list is the feature the whole site exists to demonstrate —
+  without it in the schema, there's nowhere to store what the video player
+  will seek to.
+- Alternative rejected: Adding these fields later, right before building the
+  video player. Rejected — Phase 1's job is to make every later phase
+  straightforward, and this is the most load-bearing field in the project.
+- For production I would change: `shotList` would likely move to its own table
+  if a non-technical team needed to edit it through an admin UI. A JSON column
+  is fine for content only a developer touches directly.
+
+- Decision: `prisma.config.ts` and `prisma/seed.ts` now load `.env.local`
+  explicitly, instead of the plain `dotenv/config` that only reads `.env`.
+- Why: matches both the spec and Next.js's own convention — the app code will
+  read `.env.local` automatically later, with no extra code required.
+- Alternative rejected: keeping the secret in `.env`. Rejected only because it
+  contradicts what was explicitly specified, not for a technical reason.
+- For production I would change: nothing — the deployed app won't use
+  `.env.local` at all; Vercel injects `DATABASE_URL` as a real environment
+  variable instead.
+
+### Dependency change
+
+- Removed `@prisma/adapter-better-sqlite3`. Added `@prisma/adapter-pg` (same
+  `7.9.1` line as the rest of Prisma) — Prisma 7's driver-adapter model needs
+  one adapter package per database engine; this is the Postgres one.
+
+### Limitations, deliberately
+
+- `bathrooms` and `facing` values are authored per property to be plausible
+  and consistent with each description (e.g. Vasant Vihar's description
+  already said "South-facing"; that's the value used) — they aren't derived
+  from anything, the same way the descriptions themselves are invented.
+- `shotList` timestamps are placeholder — real video files don't exist yet
+  (that arrives in Phase 2/4), so the timestamps assume a plausible ~30-second
+  clip rather than being measured against real footage.
+- `priceInr` stays an `Int`, not the spec's `BigInt`, and `areaSqft` keeps its
+  existing casing rather than the spec's `areaSqFt`. These weren't part of
+  what broke Phase 1 (the shot list was), so they weren't touched — flagging
+  here rather than silently leaving them out of the record.

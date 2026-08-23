@@ -1,10 +1,10 @@
 // Verge — data model.
 //
-// Portability note: this schema deliberately avoids SQLite-only features and
-// avoids Prisma `enum` (SQLite does not support enums, Postgres does). Fields
-// that look like enums are plain Strings validated in application code, so the
-// switch to Postgres later is a change of `provider` and `DATABASE_URL` only.
-// See DECISIONS.md for the exact lines that would change.
+// Portability note: this schema avoids Prisma `enum` even though a few
+// columns look like one (propertyType, city). Postgres supports enums, but
+// keeping these as plain Strings — validated in application code against
+// lib/property-options.ts — means the one list of allowed values stays in
+// exactly one file instead of being duplicated into the schema too.
 
 generator client {
   provider = "prisma-client"
@@ -12,7 +12,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 model Property {
@@ -21,15 +21,16 @@ model Property {
   // Human-readable and stable: this is the /properties/[slug] URL.
   slug String @unique
 
-  title    String
-  // Full postal-ish line shown on the page, e.g. "Bandra West, Mumbai".
-  location String
+  name String
+  // Neighbourhood shown under the name, e.g. "Bandra West".
+  locality String
   // The coarse value the location filter matches on, e.g. "Mumbai".
   city     String
 
   // One of the values in PROPERTY_TYPES (lib/property-options.ts).
   propertyType String
   bedrooms     Int
+  bathrooms    Int
 
   // Whole rupees. Formatted into lakh/crore at display time only.
   // Int tops out at ~214 crore, which is above anything residential we list.
@@ -38,14 +39,20 @@ model Property {
   areaSqft   Int
   // e.g. "14th of 22" or "Ground". Null for villas and row houses.
   floor      String?
+  // e.g. "North-East facing".
+  facing     String
   // e.g. "Ready to move" or "December 2026".
   possession String
 
   description String
 
-  // Local files under /public. Video is 9:16; poster is the first frame.
+  // Local files under /public. Video is 9:16; poster is its first frame.
   videoUrl  String
   posterUrl String
+  // Array of { time: "0:11", label: "Living room, west glazing" }, in the
+  // order they appear in the video. Read as a whole, never queried into —
+  // that's why this is Json and not its own table.
+  shotList Json
 
   createdAt DateTime @default(now())
 
