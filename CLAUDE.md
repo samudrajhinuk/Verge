@@ -199,21 +199,26 @@ Same as homepage.
 | Accent | one colour, chosen in your design plan | Focus rings, the submit button, active filter state |
 **Rule:** the accent appears **only** on interactive things. It never decorates. If you can point at accent-coloured pixels that are not a button, a link, or a focus ring, remove them.
 ## 5.2 Typography
-- **Display: DM Serif Display.** Property names, page headings, the hero statement.
-- **Body/UI: Lexend Deca.** Everything else — body copy, labels, buttons, facts, form fields, shot list.
-**The constraint you must design around:** DM Serif Display has **one weight (400) and an italic**. There is no bold. Hierarchy comes from **size and spacing only**.
+- **Display: DM Serif Display.** Property names, page headings, the hero statement. Used with restraint — it is not the default for every piece of text, only these specific roles.
+- **Body/UI: Lexend Deca.** Everything else — body copy, labels, buttons, facts, form fields, shot list. Variable weights are available on this face.
+**The constraint you must design around:** DM Serif Display has **one weight (400) and an italic**. There is no bold. Hierarchy comes from **size, measure and spacing only**.
 Never let the browser fake a bold — that produces a smeared, cheap-looking result called synthetic bold.
+**Loading:** both faces load via `next/font`, subset appropriately, with explicit fallback fonts set so there is no layout shift while they load.
+
+> *Amendment, 2026-08-24:* the two bullets above and the loading note were tightened for Phase 2 — no change in substance from the original brief, just spelled out explicitly (restraint, variable weights, `next/font` loading) so there's no ambiguity going into implementation.
 ## 5.3 Typography hierarchy
-| Role | Face | Mobile | Desktop |
-|---|---|---|---|
-| Hero statement | DM Serif | 40px | 72px |
-| Page heading | DM Serif | 32px | 48px |
-| Property name | DM Serif | 28px | 40px |
-| Body | Lexend | 16px | 17px |
-| Label / meta | Lexend | 13px | 13px |
-| Shot list | Lexend | 14px | 15px |
-Line height: 1.1 for display sizes, 1.6 for body. **Why:** large text needs tighter leading or it falls apart into separate lines; small text needs looser leading or it becomes a grey block.
+| Role | Face | Mobile | Desktop | Line-height | Letter-spacing | Used for |
+|---|---|---|---|---|---|---|
+| Display | DM Serif | 40px | 64px | 1.05 | −0.02em | Hero statement (homepage) |
+| Heading | DM Serif | 26px | 34px | 1.15 | −0.01em | Property name on the detail page (its `<h1>`); the `/admin` heading |
+| Sub | DM Serif | 18px | 20px | 1.35 | −0.01em | Property name on a listing card |
+| Body | Lexend | 16px | 16px | 1.6 | — | Body copy, descriptions |
+| Meta | Lexend | 13px | 13px | 1.45 | — | Locality, facts, shot list |
+| Caption | Lexend | 12px | 12px | 1.2 | 0.10em, uppercase | Bed/type/area line, small labels |
+**Why:** large text needs tighter leading or it falls apart into separate lines; small text needs looser leading or it becomes a grey block.
 Set the shot list and all numbers in **tabular figures** — a font setting where every digit occupies the same width, so timestamps and prices align vertically in a column.
+
+> *Amendment, 2026-08-24:* consolidated from four serif sizes (Hero statement 40/72, Page heading 32/48, Property name 28/40) to three (Display, Heading, Sub) after confirming no page in the sitemap ever needs a large serif heading distinct from the hero, a property name, or `/admin`'s title — "Page heading" was never a separate use case in practice. Desktop Display is 64px, not 72px, chosen by comparing both rendered side by side against the rest of the (deliberately quiet) system — see DECISIONS.md, Phase 2. `Meta` is the working size for the shot list until Phase 4 (`ShotList` component) shows a need for something else.
 ## 5.4 Spacing
 Use one scale, and never a value outside it:
 `4 · 8 · 16 · 24 · 40 · 64 · 96 · 160`

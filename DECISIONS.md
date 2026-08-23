@@ -186,3 +186,81 @@ them.
   existing casing rather than the spec's `areaSqFt`. These weren't part of
   what broke Phase 1 (the shot list was), so they weren't touched — flagging
   here rather than silently leaving them out of the record.
+
+---
+
+## Phase 2 — design tokens and type scale
+
+Most of Phase 2's design system already existed, written before Phase 1's
+field rename broke it (see `app/globals.css`, `components/PropertyCard.tsx`,
+`components/PropertyMedia.tsx`, `app/styleguide/page.tsx`). This entry covers
+the decisions made reviewing and finishing it, not decisions made from zero.
+
+- Decision: Consolidated the type scale's four serif sizes (Hero statement
+  40/72, Page heading 32/48, Property name 28/40) down to three that are
+  actually distinct in use — Display (40/64), Heading (26/34), Sub (18/20).
+- Why: no page in the sitemap ever needs "Page heading" as a size distinct
+  from a property name or `/admin`'s title — every real use is the hero, a
+  property name (card or detail), or a utilitarian page title, and those
+  three already had separate roles once traced through every page.
+- Alternative rejected: keeping four sizes to match the spec's original table
+  exactly. Rejected because a size nothing on the site actually uses breaks
+  the same "no arbitrary values" discipline the spacing scale (§5.4) depends
+  on — a scale earns a step by being used, not by being specified in advance.
+- For production I would change: nothing here — if a real fifth context
+  showed up later (a press page, a blog), I'd add a role once something
+  concrete needed it, not ahead of time.
+
+- Decision: Desktop Display size is 64px, not the spec's 72px.
+- Why: matches the site's restraint principle — quiet pricing, no icons, the
+  accent colour used only for interaction. 72px, rendered side by side with
+  64px in the styleguide, read as the generic "premium means bigger" instinct
+  §4.1 explicitly warns against for the hero section specifically.
+- Alternative rejected: 72px, the spec's original number. Genuinely close —
+  decided by comparing both rendered, not by the numbers alone.
+- For production I would change: nothing — this was decided by looking at it,
+  not placeholder.
+
+- Decision: Tokens live in `app/globals.css` under Tailwind v4's `@theme`,
+  not a `tailwind.config.ts`.
+- Why: Tailwind v4 is CSS-first — each `@theme` line both declares a real CSS
+  custom property and generates the matching utility class in one place. A JS
+  config alongside it would just be a second file that can drift from the
+  first.
+- Alternative rejected: a `tailwind.config.ts` with a `theme.extend` block —
+  the pre-v4 pattern. Rejected because v4 doesn't need it and adding one back
+  would mean two sources of truth for one set of numbers.
+- For production I would change: nothing — this is the currently-recommended
+  way to do it, not a shortcut.
+
+- Decision: `VergeIcon` renders the mark as a CSS `mask-image` filled with
+  `currentColor`, referencing `/verge-icon.svg` as a static file, rather than
+  inlining the SVG's markup into every page.
+- Why: the supplied mark is a 91-path traced file (~36KB). Inlining it would
+  ship that weight on every single page; as a referenced file it's fetched
+  and cached once.
+- Alternative rejected: inlining the raw `<svg>` so `fill="currentColor"`
+  could be set directly on the paths — the more common pattern for icons that
+  need to inherit text colour. Rejected here specifically because of the
+  file's size; a hand-drawn few-path mark would have made inlining the
+  better trade.
+- For production I would change: nothing at this file size, but if the mark
+  were ever redrawn smaller/simpler, inlining would become the better choice.
+- Legibility check, as asked: at 20px (mobile nav) the mark is legible but
+  optically smaller than the 13px nav text beside it — the drawn shape only
+  fills about 14px of the 20px box (1196×892 units in a 1292 viewBox). Not a
+  blocker, but flagging it since it was asked for directly rather than left
+  for you to notice later.
+
+- Decision: Removed `bg-hairline` from the video and poster `<img>` in
+  `PropertyMedia`, and added `tabular-nums` to the bed/type/area line in
+  `PropertyCard` (the price line already had it).
+- Why: both are the checklist in this phase's brief, applied literally — no
+  background of any kind on the video (a loading-state tint still counts as a
+  background), and tabular figures on *all* numbers, not just the price.
+- Alternative rejected: keeping the placeholder tint, reasoning that a brief
+  loading flash isn't "decorative." Rejected because the instruction was
+  unambiguous and posters (a few KB, per §12.3) load fast enough that the
+  tint was never solving a real problem.
+- For production I would change: nothing — these were bugs against the spec,
+  not judgement calls.

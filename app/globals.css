@@ -1,26 +1,117 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Design tokens.
+ *
+ * Tailwind v4 is CSS-first, so `@theme` is the single source of truth: each
+ * line below both declares a real CSS custom property and generates the
+ * matching utility. Defining tokens in a JS config as well would mean two
+ * places to change one value, so there is no tailwind.config file. */
+@theme {
+  /* Colour. Measured contrast against paper is noted for each. */
+  --color-ink: #0a0a0a; /* 18.94:1 */
+  --color-paper: #fafaf8;
+  --color-muted: #6b6b6b; /* 5.10:1 — passes 4.5 */
+  --color-hairline: #e4e4e1; /* 1.22:1 — decorative rules only */
+  --color-edge: #8e8e8a; /* 3.15:1 — borders that are real UI */
+  --color-accent: #1f3b73; /* 10.40:1 — interaction and focus only */
+
+  /* Type. DM Serif Display has one weight and no bold; Lexend Deca is variable. */
+  --font-display: var(--font-dm-serif), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-lexend-deca), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Helvetica, Arial, sans-serif;
+
+  /* Mobile sizes are the base; the -lg step is applied at md and up. */
+  --text-display: 40px;
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.02em;
+  --text-display-lg: 64px;
+  --text-display-lg--line-height: 1.05;
+  --text-display-lg--letter-spacing: -0.02em;
+
+  --text-heading: 26px;
+  --text-heading--line-height: 1.15;
+  --text-heading--letter-spacing: -0.01em;
+  --text-heading-lg: 34px;
+  --text-heading-lg--line-height: 1.15;
+  --text-heading-lg--letter-spacing: -0.01em;
+
+  --text-sub: 18px;
+  --text-sub--line-height: 1.35;
+  --text-sub--letter-spacing: -0.01em;
+  --text-sub-lg: 20px;
+  --text-sub-lg--line-height: 1.35;
+  --text-sub-lg--letter-spacing: -0.01em;
+
+  --text-body: 16px;
+  --text-body--line-height: 1.6;
+
+  --text-meta: 13px;
+  --text-meta--line-height: 1.45;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 1.2;
+  --text-caption--letter-spacing: 0.1em;
+
+  /* Spacing base of 4px, so the only reachable steps are multiples of four. */
+  --spacing: 4px;
+
+  /* Sharp corners everywhere. The logo is a file, so it is unaffected. */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+
+  --default-transition-duration: 150ms;
+  --default-transition-timing-function: ease-out;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    /* DM Serif Display ships one weight. Without this, a browser asked for a
+     * bold serif will draw a smeared fake one. Hierarchy comes from size,
+     * measure and spacing instead. */
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* No element should ever be focused without a visible ring. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* The focus ring has to stay visible on two very different grounds: the paper
+ * page, and a dark video still. Indigo on ink measures only 1.82:1, so the
+ * inner paper ring is what carries it over media, and the accent ring reads
+ * against the page. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--color-paper);
+  }
+}
+
+/* Long property and location names must wrap rather than push the grid wide. */
+@utility wrap-anywhere {
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

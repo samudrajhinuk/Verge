@@ -51,3 +51,7 @@ next-env.d.ts
 /.windsurf
 /.claude
 /skills-lock.json
+
+# compiled swift asset tools (source is committed)
+/scripts/prepare-video
+/scripts/extract-poster
