@@ -1,0 +1,76 @@
+// Verge — data model.
+//
+// Portability note: this schema deliberately avoids SQLite-only features and
+// avoids Prisma `enum` (SQLite does not support enums, Postgres does). Fields
+// that look like enums are plain Strings validated in application code, so the
+// switch to Postgres later is a change of `provider` and `DATABASE_URL` only.
+// See DECISIONS.md for the exact lines that would change.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Property {
+  id String @id @default(cuid())
+
+  // Human-readable and stable: this is the /properties/[slug] URL.
+  slug String @unique
+
+  title    String
+  // Full postal-ish line shown on the page, e.g. "Bandra West, Mumbai".
+  location String
+  // The coarse value the location filter matches on, e.g. "Mumbai".
+  city     String
+
+  // One of the values in PROPERTY_TYPES (lib/property-options.ts).
+  propertyType String
+  bedrooms     Int
+
+  // Whole rupees. Formatted into lakh/crore at display time only.
+  // Int tops out at ~214 crore, which is above anything residential we list.
+  priceInr Int
+
+  areaSqft   Int
+  // e.g. "14th of 22" or "Ground". Null for villas and row houses.
+  floor      String?
+  // e.g. "Ready to move" or "December 2026".
+  possession String
+
+  description String
+
+  // Local files under /public. Video is 9:16; poster is the first frame.
+  videoUrl  String
+  posterUrl String
+
+  createdAt DateTime @default(now())
+
+  enquiries Enquiry[]
+
+  // Indexed because these are the two high-cardinality filter columns.
+  // bedrooms and propertyType have too few distinct values to be worth an index.
+  @@index([city])
+  @@index([priceInr])
+}
+
+model Enquiry {
+  id String @id @default(cuid())
+
+  name    String
+  email   String
+  phone   String
+  message String?
+
+  // Which property the enquiry came from — the whole point of the pipeline.
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([propertyId])
+  @@index([createdAt])
+}
