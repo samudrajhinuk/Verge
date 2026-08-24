@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient, type Prisma } from "../lib/generated/prisma/client";
+import { PrismaClient } from "../lib/generated/prisma/client";
 import type { PropertyType, City } from "../lib/property-options";
 
 // Plain `dotenv/config` only reads `.env`. The database secret lives in
@@ -10,8 +10,6 @@ config({ path: ".env.local" });
 // Everything below is fixed: no random ids, no `new Date()`, no shuffling.
 // Running the seed twice produces a byte-identical database, which is what
 // makes "reset and reseed" a safe thing to tell someone to run.
-
-type ShotListEntry = { time: string; label: string };
 
 type SeedProperty = {
   id: string;
@@ -28,7 +26,11 @@ type SeedProperty = {
   facing: string;
   possession: string;
   description: string;
-  shotList: ShotListEntry[];
+  // The clip this property is shown with: /videos/<clip>.mp4 and
+  // /posters/<clip>.jpg. Chosen per property so the room on screen suits the
+  // property's type and size.
+  clip: string;
+  videoCaption: string;
   createdAt: Date;
 };
 
@@ -52,12 +54,8 @@ const properties: SeedProperty[] = [
     possession: "Ready to move",
     description:
       "Open on three sides, with the sea visible from the west elevation. 2,180 sq ft carpet. IPS-finished concrete floors, full-height glazing along the living room. Built 2019. Eight minutes to Bandra station on foot. Two covered parking bays.",
-    shotList: [
-      { time: "0:00", label: "Entrance and hallway" },
-      { time: "0:09", label: "Living and dining, west glazing" },
-      { time: "0:19", label: "Kitchen" },
-      { time: "0:27", label: "Principal bedroom" },
-    ],
+    clip: "property-06",
+    videoCaption: "Living room",
     createdAt: new Date("2026-01-06T09:00:00.000Z"),
   },
   {
@@ -76,12 +74,8 @@ const properties: SeedProperty[] = [
     possession: "December 2026",
     description:
       "A duplex across the top two floors. 5,400 sq ft with a 900 sq ft private terrace facing the sea link. Italian marble on the lower level, teak above. Four covered bays and a service lift landing inside the unit.",
-    shotList: [
-      { time: "0:00", label: "Entrance, lower level" },
-      { time: "0:10", label: "Living room, Italian marble" },
-      { time: "0:20", label: "Staircase to upper level" },
-      { time: "0:29", label: "Terrace, sea link view" },
-    ],
+    clip: "property-10",
+    videoCaption: "Living and dining areas",
     createdAt: new Date("2026-01-07T09:00:00.000Z"),
   },
   {
@@ -100,12 +94,8 @@ const properties: SeedProperty[] = [
     possession: "Ready to move",
     description:
       "1,120 sq ft in a 1998 building, stripped and retrofitted in 2021. Rewired, replumbed, original mosaic floors kept and polished. Corner unit with cross-ventilation on two sides. 400 m from the metro. One parking bay.",
-    shotList: [
-      { time: "0:00", label: "Entrance" },
-      { time: "0:08", label: "Living room, corner windows" },
-      { time: "0:17", label: "Kitchen" },
-      { time: "0:25", label: "Principal bedroom" },
-    ],
+    clip: "property-08",
+    videoCaption: "Kitchen",
     createdAt: new Date("2026-01-08T09:00:00.000Z"),
   },
   {
@@ -124,12 +114,8 @@ const properties: SeedProperty[] = [
     possession: "Ready to move",
     description:
       "3,600 sq ft built on a 6,000 sq ft plot. Four bedrooms, all en suite, three facing the rear garden. Kota stone on the ground floor, oak above. Borewell plus a Cauvery connection. Built 2011, roof waterproofed 2023.",
-    shotList: [
-      { time: "0:00", label: "Approach and porch" },
-      { time: "0:09", label: "Living room, Kota stone" },
-      { time: "0:19", label: "Kitchen" },
-      { time: "0:28", label: "Garden-facing bedroom" },
-    ],
+    clip: "property-01",
+    videoCaption: "Dining area, natural light",
     createdAt: new Date("2026-01-09T09:00:00.000Z"),
   },
   {
@@ -148,12 +134,8 @@ const properties: SeedProperty[] = [
     possession: "Ready to move",
     description:
       "First-floor builder unit of 3,200 sq ft with an independent entrance and 1,100 sq ft of terrace rights. South-facing. Servant quarter with a separate stair. Freehold title. Two covered parking spaces.",
-    shotList: [
-      { time: "0:00", label: "Independent entrance" },
-      { time: "0:10", label: "Living room" },
-      { time: "0:20", label: "Kitchen" },
-      { time: "0:29", label: "Terrace" },
-    ],
+    clip: "property-04",
+    videoCaption: "Reception room",
     createdAt: new Date("2026-01-10T09:00:00.000Z"),
   },
   {
@@ -172,12 +154,8 @@ const properties: SeedProperty[] = [
     possession: "Ready to move",
     description:
       "620 sq ft, one bedroom, on the top floor. Single-loaded corridor, so the whole unit takes north light. 1994 shell with interiors redone in 2022. No lift. Ten minutes on foot to Bund Garden Road.",
-    shotList: [
-      { time: "0:00", label: "Entrance" },
-      { time: "0:07", label: "Living room, north light" },
-      { time: "0:15", label: "Kitchen, galley layout" },
-      { time: "0:22", label: "Bedroom" },
-    ],
+    clip: "property-09",
+    videoCaption: "Bedroom",
     createdAt: new Date("2026-01-11T09:00:00.000Z"),
   },
   {
@@ -196,12 +174,8 @@ const properties: SeedProperty[] = [
     possession: "Ready to move",
     description:
       "1,850 sq ft over three levels with a 300 sq ft rear court. End unit, so one long wall stays open. Concrete frame, completed 2016. Gated lane of eleven houses. Two parking bays in the forecourt.",
-    shotList: [
-      { time: "0:00", label: "Ground floor, entrance" },
-      { time: "0:09", label: "Living room" },
-      { time: "0:18", label: "Rear court" },
-      { time: "0:27", label: "Bedroom, second level" },
-    ],
+    clip: "property-02",
+    videoCaption: "Entrance hallway",
     createdAt: new Date("2026-01-12T09:00:00.000Z"),
   },
   {
@@ -220,12 +194,8 @@ const properties: SeedProperty[] = [
     possession: "Ready to move",
     description:
       "4,800 sq ft on a 9,000 sq ft plot, built 2008 and taken back to the frame in 2022. Five bedrooms, two of them on the ground floor. Granite plinth, lime-plastered walls. Mature rain trees along the north boundary.",
-    shotList: [
-      { time: "0:00", label: "Approach, garden" },
-      { time: "0:10", label: "Dining room" },
-      { time: "0:20", label: "Kitchen" },
-      { time: "0:30", label: "Principal bedroom, ground floor" },
-    ],
+    clip: "property-03",
+    videoCaption: "Living room, marble detailing",
     createdAt: new Date("2026-01-13T09:00:00.000Z"),
   },
   {
@@ -244,12 +214,8 @@ const properties: SeedProperty[] = [
     possession: "March 2027",
     description:
       "1,340 sq ft, east-facing, 1.2 km from Elliot's Beach. The Madras terrace roof over the living room was retained in the 2019 refit. Ceiling height 11 ft. Covered parking for one car and two two-wheelers.",
-    shotList: [
-      { time: "0:00", label: "Entrance" },
-      { time: "0:09", label: "Living room, Madras terrace roof" },
-      { time: "0:18", label: "Kitchen" },
-      { time: "0:26", label: "Principal bedroom, east-facing" },
-    ],
+    clip: "property-05",
+    videoCaption: "Principal bedroom",
     createdAt: new Date("2026-01-14T09:00:00.000Z"),
   },
   {
@@ -270,12 +236,8 @@ const properties: SeedProperty[] = [
     possession: "August 2026",
     description:
       "2,950 sq ft on a 12,000 sq ft plot holding 31 existing coconut palms. Laterite walls and a Mangalore tile roof, restored in 2021 to the original 1962 footprint. Well water with a municipal backup. 4 km to Anjuna, 9 km to Mapusa.",
-    shotList: [
-      { time: "0:00", label: "Approach, coconut grove" },
-      { time: "0:11", label: "Living room, laterite walls" },
-      { time: "0:22", label: "Kitchen" },
-      { time: "0:32", label: "Bedroom, Mangalore tile roof" },
-    ],
+    clip: "property-07",
+    videoCaption: "Bedroom, west-facing",
     createdAt: new Date("2026-01-15T09:00:00.000Z"),
   },
 ];
@@ -295,13 +257,14 @@ async function main() {
   await prisma.enquiry.deleteMany();
   await prisma.property.deleteMany();
 
-  for (const property of properties) {
+  for (const { clip, ...property } of properties) {
+    // `clip` is a seed-only shorthand, not a column: it expands into the two
+    // real fields below so the file names appear in exactly one place.
     await prisma.property.create({
       data: {
         ...property,
-        shotList: property.shotList as unknown as Prisma.InputJsonValue,
-        videoUrl: `/videos/${property.slug}.mp4`,
-        posterUrl: `/posters/${property.slug}.jpg`,
+        videoUrl: `/videos/${clip}.mp4`,
+        posterUrl: `/posters/${clip}.jpg`,
       },
     });
   }

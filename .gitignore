@@ -55,3 +55,7 @@ next-env.d.ts
 # compiled swift asset tools (source is committed)
 /scripts/prepare-video
 /scripts/extract-poster
+
+# raw 4K camera originals (~300 MB). Kept locally so the web-ready clips in
+# public/videos can be regenerated, never committed.
+/media-source

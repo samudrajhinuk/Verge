@@ -347,3 +347,91 @@ the decisions made reviewing and finishing it, not decisions made from zero.
 - For production I would change: nothing — this is the same technique
   Tailwind's own generated CSS uses internally, just written by hand for the
   one case where the automatic version proved unreliable.
+
+---
+
+## Video model change — the shot list was cut
+
+Between Phase 3 and Phase 4 the real footage arrived and replaced the
+placeholder clips. That forced a change to the product itself, not just to
+the assets.
+
+- Decision: **Removed the shot list feature entirely.** The `shotList` JSON
+  column is gone; a `videoCaption` String replaces it.
+- Why: a shot list is a timestamped index into a walkthrough — "0:11 Living
+  room, 0:19 Kitchen" — and each real clip shows exactly **one** space. There
+  is nothing to index into. Every timestamp would have been invented, which
+  means the site's headline feature would have been a demonstration of
+  navigating footage that does not exist.
+- Alternative rejected: keep the shot list and generate plausible timestamps
+  from each clip's duration. Rejected outright — it is fabricated data
+  presented as the product's main idea, and it is the one thing in this
+  project that could not survive being clicked on in an interview.
+- What this costs: the shot list was the stated differentiator (CLAUDE.md
+  §1.3) and the most distinctive interaction in the build. Losing it is a
+  real loss, not a tidy-up. The strongest remaining answer to "what makes
+  this more than a nice-looking page" is the filtering pipeline from Phase 3:
+  the URL is the state, the query runs on the server, and the browser never
+  receives the properties that did not match.
+- For production I would change: if the footage were re-shot as genuine
+  walkthroughs, the feature is worth rebuilding — and at that point the shot
+  list would justify its own table rather than a JSON column, since editors
+  would need to adjust timestamps without a developer.
+
+- Decision: `videoCaption` is one plain String, used in three places — shown
+  beneath the video on the detail page, used as the video element's
+  accessible name, and shown as visible text when the clip cannot play.
+- Why: those three needs are the same sentence. Storing it once and reusing
+  it means the screen-reader announcement and the visible caption can never
+  drift apart, and a blocked autoplay (iOS Low Power Mode, §10.7) leaves a
+  described still rather than a silent grey box.
+- Alternative rejected: separate `caption` and `altText` fields. Rejected as
+  two fields that would always hold the same words.
+
+- Decision: Clips are named `property-01.mp4` … `property-10.mp4` and
+  `hero.mp4`, not by property slug.
+- Why: the source files arrived as `1st video.mp4`, `hero video.mp4` and so
+  on. Spaces in a URL have to be percent-encoded (`1st%20video.mp4`), which
+  is fragile and ugly in a path. Numbering also decouples the file from the
+  property: which clip illustrates which listing is a data decision in the
+  seed, not something baked into a filename.
+- Alternative rejected: rename to match each slug, as the previous set did.
+  Rejected because reassigning a clip to a different property would then
+  require renaming a file rather than editing one line of seed data.
+
+- Decision: The raw 4K originals were moved to `media-source/` (gitignored)
+  and re-encoded into `public/videos/` rather than committed as-is.
+- Why: the originals total roughly 300MB — one is 71MB. CLAUDE.md §12.2 caps
+  each clip at 3MB, and Indian mobile data is the target condition. The
+  encoded set totals about 24MB, every file under 3MB, with the originals
+  kept locally so the encode can be redone.
+- How: `scripts/prepare-video.swift` (macOS AVFoundation, no ffmpeg
+  dependency) centre-crops landscape source to 9:16, drops the audio track —
+  every video on the site is muted — and re-encodes at a bitrate chosen per
+  clip from its duration, since size is duration × bitrate and the clips run
+  from 3 to 17 seconds. A fixed bitrate would have pushed the longest five
+  over budget, so the script gained a bitrate argument.
+- Posters: `scripts/extract-poster.swift` pulls the **first frame of the
+  encoded clip** — not the source, so the poster matches the frame the video
+  actually starts on and the swap is invisible. 405×720 JPEG, 31–57KB each.
+- For production I would change: this belongs in a video pipeline or CDN with
+  multiple renditions per clip, not two hand-rolled Swift tools. They are
+  here because they have no install footprint and the asset count is eleven.
+
+- Decision: The hero video is black and white, and CLAUDE.md §5.11 now states
+  the rule so a later pass does not "fix" it: **brand surfaces are
+  monochrome, property footage is in colour.**
+- Why: the hero is Verge talking about itself, so it belongs to the ink and
+  paper palette. The property clips are the product — a buyer judging a room
+  needs its real colour, the warmth of the light and the tone of the stone.
+  Desaturating those would be styling placed over information.
+
+- Decision: The migration adds `videoCaption` with a temporary `DEFAULT ''`
+  and then drops the default, rather than resetting the database.
+- Why: the column is required and the table already held ten rows, so a naive
+  `ADD COLUMN ... NOT NULL` is rejected by Postgres. Writing it this way means
+  the migration would also run against a database holding real enquiries.
+- Alternative rejected: `prisma migrate reset`, which would have worked here
+  because the data is seed data. Rejected because the habit is wrong — the
+  same migration in production would destroy the enquiries the whole site
+  exists to collect.

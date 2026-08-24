@@ -49,10 +49,12 @@ model Property {
   // Local files under /public. Video is 9:16; poster is its first frame.
   videoUrl  String
   posterUrl String
-  // Array of { time: "0:11", label: "Living room, west glazing" }, in the
-  // order they appear in the video. Read as a whole, never queried into —
-  // that's why this is Json and not its own table.
-  shotList Json
+  // What the clip actually shows, e.g. "Dining area, natural light". Each
+  // clip is one space rather than a walkthrough, so this describes the room
+  // on screen. Doubles as the video's accessible name and as the text shown
+  // when the video cannot play, so a blocked autoplay is never a silent
+  // mystery box.
+  videoCaption String
 
   createdAt DateTime @default(now())
 

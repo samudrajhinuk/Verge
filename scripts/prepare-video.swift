@@ -8,7 +8,13 @@
 // re-encodes. A 4K clip goes from ~34 MB to ~2 MB.
 //
 // Build:  swiftc -O scripts/prepare-video.swift -o scripts/prepare-video
-// Run:    scripts/prepare-video <in.mp4> <out.mp4> <width> <height>
+// Run:    scripts/prepare-video <in.mp4> <out.mp4> <width> <height> [bitrate]
+//
+// Bitrate is bits per second and defaults to 2.5 Mbps. It is a parameter
+// because file size is duration x bitrate: the clips run from 3 to 17
+// seconds, so a single fixed bitrate cannot keep all of them under the 3 MB
+// budget in CLAUDE.md 12.2. The caller picks a bitrate per clip from its
+// duration.
 //
 // Requires only the macOS command line tools — no ffmpeg, no downloads.
 
@@ -16,12 +22,13 @@ import AVFoundation
 import Foundation
 
 let args = CommandLine.arguments
-guard args.count == 5,
+guard args.count == 5 || args.count == 6,
       let targetW = Double(args[3]),
       let targetH = Double(args[4]) else {
-    FileHandle.standardError.write(Data("usage: prepare-video <in> <out> <w> <h>\n".utf8))
+    FileHandle.standardError.write(Data("usage: prepare-video <in> <out> <w> <h> [bitrate]\n".utf8))
     exit(1)
 }
+let targetBitRate = args.count == 6 ? (Int(args[5]) ?? 2_500_000) : 2_500_000
 
 let inputURL = URL(fileURLWithPath: args[1])
 let outputURL = URL(fileURLWithPath: args[2])
@@ -110,7 +117,7 @@ Task {
                 AVVideoWidthKey: Int(renderSize.width),
                 AVVideoHeightKey: Int(renderSize.height),
                 AVVideoCompressionPropertiesKey: [
-                    AVVideoAverageBitRateKey: 2_500_000,
+                    AVVideoAverageBitRateKey: targetBitRate,
                     AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
                     AVVideoAllowFrameReorderingKey: true,
                 ],

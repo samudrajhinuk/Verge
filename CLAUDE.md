@@ -14,16 +14,10 @@ That second thing is called a **lead**. A lead is a person who has expressed int
 ## 1.3 What makes Verge different from a normal real-estate website
 A normal real-estate site shows a **photo gallery**: fifteen still images per property, which you click through one at a time.
 Verge shows **one vertical video per property** instead. Vertical means portrait orientation — the shape of a phone screen, taller than it is wide.
-**Why this is a real idea and not just a style choice:** a photo gallery lets you skip straight to the kitchen. A video does not — you have to watch it in order. That is the weakness of video, and most video-led sites ignore it.
-Verge solves it with the **shot list**: a timestamped list beside the video saying what appears when.
-```
-0:00   Entrance and hall
-0:11   Living room, west glazing
-0:19   Kitchen
-0:26   Principal bedroom
-```
-Each line is a button. Click it, the video jumps there. You get video's continuity *and* the gallery's random access.
-**This is the single most important thing on the site.** If Rishank asks what makes it more than a nice-looking page, this is your answer.
+Each clip shows **one room**, captioned with the room it shows — "Dining area, natural light". Not a walkthrough, and not a claim to be a full tour: one honest look at one space, in motion, at the size and shape of the phone it will be watched on.
+**Why this is a real idea and not just a style choice:** a still photograph is chosen and staged to flatter. A continuous unedited shot of a single room cannot hide the ceiling height, the light at that hour, or how the space actually connects to the next one. The video is doing something the gallery structurally cannot, rather than being a gallery that moves.
+
+> *Amendment, 2026-08-24 — the shot list was cut.* This section previously described a **shot list**: a timestamped index beside the video ("0:11 Living room"), each line a button seeking the video to that moment. It was the stated differentiator, and it was removed once the real footage arrived. The clips each show a single space, so every timestamp in such a list would have been fabricated — a feature demonstrating navigation through a walkthrough that does not exist. Cutting it costs the project its most distinctive interaction; keeping it would have meant shipping invented data as the centrepiece. **If asked what makes this more than a nice-looking page, the answer is now the filtering pipeline in §7.6** — the URL is the state, the query runs on the server, and the browser never receives the properties that did not match. See DECISIONS.md, "Video model change".
 ## 1.4 Who the target user is
 A person in an Indian metro looking to buy a home in the ₹1–20 crore range. They are browsing on a phone, in the evening, comparing several properties. They are not ready to buy today — they are ready to *ask a question*.
 ## 1.5 What we want that user to do
@@ -55,8 +49,8 @@ Every decision in this document serves that sentence. If a feature does not, it 
 **Why this section exists:** ten properties is browsable; a real site has hundreds. Filtering demonstrates the backend, and the live count demonstrates you thought about the user.
 **Intended next action:** apply, then tap a property.
 ## 4th — They open a property
-**What they see, top to bottom:** the vertical video, larger. Beside it (desktop) or beneath it (mobile), the shot list. Below, the property name, location, price. Below that, the facts — size, floor, bedrooms, bathrooms, possession date. Below that, a paragraph of description. At the end, the enquiry form.
-**What they can do:** watch, jump to a moment via the shot list, read the facts, enquire.
+**What they see, top to bottom:** the vertical video, larger, with its caption beneath it naming the room on screen. Below, the property name, location, price. Below that, the facts — size, floor, bedrooms, bathrooms, possession date. Below that, a paragraph of description. At the end, the enquiry form.
+**What they can do:** watch, read the facts, enquire.
 **Information received:** everything needed to decide whether to ask a question.
 **Why this section exists:** this is where interest converts to intent. The video creates desire; the facts create confidence; the form captures the result.
 **Intended next action:** fill in the form.
@@ -148,14 +142,15 @@ Same as homepage, but on a solid background rather than over video.
 ## 4.3 Property detail (`/properties/[slug]`)
 ### Section 1 → Navigation
 Same as listing.
-### Section 2 → Video and shot list
+### Section 2 → Video and caption
 - **Purpose:** the property presentation. This is the heart of the site.
-- **Content:** the vertical video, and the timestamped shot list.
-- **Layout (desktop):** video on the left at roughly one third width, shot list on the right, top-aligned with the video.
-- **Layout (mobile):** video full width, shot list directly beneath.
-- **Interaction:** each shot-list line is a button; clicking seeks the video to that timestamp.
+- **Content:** the vertical video, and one line of caption naming the room it shows.
+- **Layout (desktop):** video on the left at roughly one third width, caption directly beneath it.
+- **Layout (mobile):** video full width, caption directly beneath.
+- **Interaction:** standard video controls, reachable by keyboard. Nothing custom.
 - **Prominent:** the video.
-- **Quiet:** the shot list — plain left-aligned text against a hairline, no boxes, no icons.
+- **Quiet:** the caption — Lexend at label size in Ink 60, one line, no box, no icon.
+**The caption appears in three places, all fed by the same `videoCaption` field:** beneath the video; as the video element's accessible name; and as the visible text when the clip cannot play, so a blocked autoplay leaves a described still rather than a silent mystery box.
 ### Section 3 → Identity
 - **Purpose:** name the thing being sold.
 - **Content:** property name (large, serif), location beneath it, price beneath that.
@@ -200,7 +195,7 @@ Same as homepage.
 **Rule:** the accent appears **only** on interactive things. It never decorates. If you can point at accent-coloured pixels that are not a button, a link, or a focus ring, remove them.
 ## 5.2 Typography
 - **Display: DM Serif Display.** Property names, page headings, the hero statement. Used with restraint — it is not the default for every piece of text, only these specific roles.
-- **Body/UI: Lexend Deca.** Everything else — body copy, labels, buttons, facts, form fields, shot list. Variable weights are available on this face.
+- **Body/UI: Lexend Deca.** Everything else — body copy, labels, buttons, facts, form fields, the video caption. Variable weights are available on this face.
 **The constraint you must design around:** DM Serif Display has **one weight (400) and an italic**. There is no bold. Hierarchy comes from **size, measure and spacing only**.
 Never let the browser fake a bold — that produces a smeared, cheap-looking result called synthetic bold.
 **Loading:** both faces load via `next/font`, subset appropriately, with explicit fallback fonts set so there is no layout shift while they load.
@@ -213,12 +208,12 @@ Never let the browser fake a bold — that produces a smeared, cheap-looking res
 | Heading | DM Serif | 26px | 34px | 1.15 | −0.01em | Property name on the detail page (its `<h1>`); the `/admin` heading |
 | Sub | DM Serif | 18px | 20px | 1.35 | −0.01em | Property name on a listing card |
 | Body | Lexend | 16px | 16px | 1.6 | — | Body copy, descriptions |
-| Meta | Lexend | 13px | 13px | 1.45 | — | Locality, facts, shot list |
+| Meta | Lexend | 13px | 13px | 1.45 | — | Locality, facts, video caption |
 | Caption | Lexend | 12px | 12px | 1.2 | 0.10em, uppercase | Bed/type/area line, small labels |
 **Why:** large text needs tighter leading or it falls apart into separate lines; small text needs looser leading or it becomes a grey block.
-Set the shot list and all numbers in **tabular figures** — a font setting where every digit occupies the same width, so timestamps and prices align vertically in a column.
+Set all numbers in **tabular figures** — a font setting where every digit occupies the same width, so prices and areas align vertically in a column.
 
-> *Amendment, 2026-08-24:* consolidated from four serif sizes (Hero statement 40/72, Page heading 32/48, Property name 28/40) to three (Display, Heading, Sub) after confirming no page in the sitemap ever needs a large serif heading distinct from the hero, a property name, or `/admin`'s title — "Page heading" was never a separate use case in practice. Desktop Display is 64px, not 72px, chosen by comparing both rendered side by side against the rest of the (deliberately quiet) system — see DECISIONS.md, Phase 2. `Meta` is the working size for the shot list until Phase 4 (`ShotList` component) shows a need for something else.
+> *Amendment, 2026-08-24:* consolidated from four serif sizes (Hero statement 40/72, Page heading 32/48, Property name 28/40) to three (Display, Heading, Sub) after confirming no page in the sitemap ever needs a large serif heading distinct from the hero, a property name, or `/admin`'s title — "Page heading" was never a separate use case in practice. Desktop Display is 64px, not 72px, chosen by comparing both rendered side by side against the rest of the (deliberately quiet) system — see DECISIONS.md, Phase 2. `Meta` is the size used for the video caption on the detail page.
 ## 5.4 Spacing
 Use one scale, and never a value outside it:
 `4 · 8 · 16 · 24 · 40 · 64 · 96 · 160`
@@ -231,7 +226,7 @@ Property grid: 4 columns at 1440, 3 at 1280, 2 at 768, 1 at 375.
 Three kinds only:
 1. **Primary** — solid accent, paper text. Used once per page maximum. The enquiry submit.
 2. **Secondary** — 1px border, transparent background. The hero CTA, Apply in the filter sheet.
-3. **Text** — underlined text, no box. Reset filters, shot list lines.
+3. **Text** — underlined text, no box. Reset filters.
 No rounded pills. Radius 0 or 2px, nothing more. Minimum 44px tall on mobile.
 ## 5.7 Property cards
 Vertical video at 9:16 aspect ratio. Beneath it, in Lexend: property name, location, price, then `3 bed · Apartment` on one line.
@@ -248,6 +243,8 @@ Icon left, three text links right. 13px Lexend, letter-spaced. No hamburger menu
 ## 5.11 Video treatment
 Always 9:16. Never cropped to fit a layout — if the layout does not fit the video, change the layout. `object-fit: cover` within the correct ratio container.
 Muted always. Autoplay on listing cards and hero. Controls visible on the detail page only.
+Each property clip shows **one room**, and carries a one-line caption naming that room (§4.3, Section 2). Source footage is landscape 4K; it is centre-cropped to 9:16 and re-encoded to under 3MB by `scripts/prepare-video.swift`, and every poster is a real first frame pulled from the encoded clip by `scripts/extract-poster.swift` — never a placeholder or a stock still.
+**The hero video is black and white. This is deliberate and must not be "corrected".** The rule is: **brand surfaces are monochrome, property footage is in colour.** The homepage hero is Verge speaking about itself, so it is monochrome, consistent with an ink-and-paper palette carrying a single accent. The property clips are the product, and a buyer judging a room needs to see its actual colour — the warmth of the light, the tone of the stone. Desaturating those would be styling over information. If a future change makes the hero look "inconsistent" with the colour clips beneath it, that inconsistency is the point.
 ## 5.12 Borders and radius
 Borders: 1px, Ink 20, used only to separate sections and as form underlines.
 Radius: 0 everywhere, except 2px on buttons. **Design decision:** rounded corners read as friendly and app-like. Verge is meant to read as editorial and expensive.
@@ -292,14 +289,14 @@ All of it wrapped in `prefers-reduced-motion` — a browser setting where a user
 - **Filters:** still the bottom sheet. **Why:** 768px is usually a touch device, and a horizontal filter bar with four dropdowns is cramped and fiddly with a finger.
 - **Typography:** hero 56px.
 - **Spacing:** 40px page margin, 96px between sections.
-- **Detail page:** video and shot list still stacked.
+- **Detail page:** video full width, caption beneath.
 ## 1280px — laptop
 - **Navigation:** unchanged.
 - **Property cards:** three columns, 390px wide, media 694px tall.
 - **Filters:** switch to a horizontal bar. Bottom sheet no longer used.
 - **Typography:** hero 72px.
 - **Spacing:** 64px page margin, 160px between sections.
-- **Detail page:** video left, shot list right.
+- **Detail page:** video left at one third width, caption beneath it.
 ## 1440px — desktop
 - **Property cards:** four columns, 306px wide, media 544px tall.
 - Content capped at 1440px, centred, so the layout does not stretch indefinitely on very wide screens.
@@ -322,8 +319,8 @@ A **Client Component** runs in the browser. It can respond to clicks, hold tempo
 - `FilterSheet` — opens, closes, holds temporary selections
 - `FilterControls` — responds to changes
 - `EnquiryForm` — validation feedback, pending state
-- `VideoPlayer` on the detail page — the shot list seeks the video, which requires browser control
-**Why the card is a Server Component even though it contains a video:** an autoplaying muted video needs no JavaScript. The HTML `<video>` element handles it. Only the *seeking* behaviour on the detail page needs JavaScript.
+- `VideoPlayer` on the detail page — only if the video needs behaviour beyond the plain HTML element; with the shot list cut, a server-rendered `<video controls>` may be enough
+**Why the card is a Server Component even though it contains a video:** an autoplaying muted video needs no JavaScript. The HTML `<video>` element handles it. (The card's `PropertyMedia` is a Client Component for a different reason — it lazy-loads the clip and copes with autoplay being refused, per §10.7 and §12.2.)
 ## 7.3 How URL filters work
 A **search param** is the part of a URL after `?`:
 ```
@@ -391,10 +388,10 @@ A Server Component runs `prisma.enquiry.findMany()` with the related property in
 | `description` | String | The paragraph. |
 | `videoUrl` | String | Path to the clip. |
 | `posterUrl` | String | Still frame shown before video loads. |
-| `shotList` | Json | Array of `{ time, label }`. |
+| `videoCaption` | String | What the clip shows, e.g. "Kitchen". Caption, accessible name, and no-video fallback. |
 | `createdAt` | DateTime | Fixed in seed for deterministic ordering. |
 **Why `priceInRupees` is a BigInt:** ₹18.5 crore is 185,000,000. A standard integer is safe to about 2.1 billion, which ₹200+ crore properties would exceed. BigInt removes the risk entirely.
-**Why `shotList` is Json and not its own table:** shot lists are only ever read as a complete list belonging to one property. You never query across them. A separate table would add a join for no benefit. **This is a deliberate simplification** — say so if asked, and add that a production system with editable shot lists would justify a real table.
+**Why `videoCaption` is a plain String and not a table of timestamped rows:** the earlier design had a `shotList` JSON column holding `{ time, label }` pairs. The footage turned out to be one room per clip, so there is nothing to index into — a single line of text is the whole truth about what the clip shows. See DECISIONS.md, "Video model change".
 ## 8.2 Enquiry
 | Field | Type | Why it exists |
 |---|---|---|
@@ -420,8 +417,7 @@ This is a **one-to-many relationship**, expressed by `propertyId` on Enquiry poi
 | `FilterControls` | The four inputs | Filter bar and sheet | Client | current values, change handler |
 | `FilterBar` | Desktop horizontal filters | Listing, ≥1280px | Client | current filters, result count |
 | `FilterSheet` | Mobile bottom sheet | Listing, <1280px | Client | current filters, live count |
-| `VideoPlayer` | Video with seek control | Detail page | Client | video url, poster, ref for seeking |
-| `ShotList` | Timestamped buttons | Detail page | Client | shot array, seek function |
+| `VideoPlayer` | Video with visible controls, plus its caption | Detail page | Server unless it needs behaviour | video url, poster, caption |
 | `PropertyFacts` | Label/value list | Detail page | Server | one property |
 | `EnquiryForm` | Fields, validation, states | Detail page | Client | property id and name |
 | `SkeletonCard` | Grey placeholder while loading | Listing | Server | nothing |
@@ -475,13 +471,13 @@ In the filter sheet: focus moves into the sheet on open, is trapped inside, and 
 - Result count in an `aria-live="polite"` region, so filter changes are announced.
 - Form success in an `aria-live="polite"` region.
 - The Verge icon needs an accessible name, or is hidden from screen readers if the adjacent text already says Verge.
-- Shot list buttons need names including the timestamp: "Jump to 0:11, living room".
+- The video element takes its accessible name from `videoCaption`, so a screen reader announces what the clip shows rather than "video".
 ## 11.4 Forms
 Real `<label>` elements connected to inputs. Correct input types: `type="email"`, `type="tel"` — these change the phone keyboard, which is a real usability win on mobile. Errors connected by `aria-describedby`. Required fields marked in text, not with an asterisk alone.
 ## 11.5 Filter sheet
 `role="dialog"`, `aria-modal="true"`, and `aria-labelledby` pointing at its heading. Escape closes.
 ## 11.6 Video
-Muted, `playsInline`. Poster image on every video. Controls reachable by keyboard on the detail page. The shot list is the accessible alternative to scrubbing.
+Muted, `playsInline`. Poster image on every video. Controls reachable by keyboard on the detail page. The caption is the text alternative: it states what the clip shows without requiring anyone to watch it.
 ## 11.7 Motion
 Every animation inside `prefers-reduced-motion: reduce`. Autoplaying video paused when that setting is on.
 ## 11.8 Contrast
@@ -509,7 +505,7 @@ Use `next/image` for posters. It serves modern formats and correct sizes automat
 ## 12.6 Server Components
 Server Components ship zero JavaScript. Most of this site is Server Components, so most of the site ships no JavaScript at all.
 ## 12.7 Client JavaScript
-Only four things need it: filter sheet, filter controls, video seeking, enquiry form. Everything else is HTML.
+Only four things need it: filter sheet, filter controls, lazy-loading card video, enquiry form. Everything else is HTML.
 ## 12.8 Suspense
 `Suspense` lets the page render immediately with placeholders where slow content will appear. The nav, filter bar and result count show instantly; the grid fills in.
 ## 12.9 What should and should not load immediately
@@ -555,12 +551,12 @@ Add Open Graph tags with the poster image, so a shared link previews with the pr
 5. **Test:** apply a filter, copy the URL, open it in a new tab — same results. Press back — previous results. Type `?beds=banana` — page still works, shows empty state.
 6. **Finished when:** all four filters work, URL is shareable, back button works, mobile sheet is keyboard operable.
 ## Phase 4 — Property detail
-1. **Building:** `/properties/[slug]`, video, shot list, facts.
+1. **Building:** `/properties/[slug]`, video, caption, facts.
 2. **Why now:** the listing links here; without it the journey dead-ends.
-3. **Files:** `app/properties/[slug]/page.tsx`, `components/VideoPlayer.tsx`, `components/ShotList.tsx`, `components/PropertyFacts.tsx`.
-4. **Understand:** dynamic routes; why the shot list requires a Client Component.
-5. **Test:** click every shot-list line, confirm the video seeks. Operate it by keyboard. Test with a nonexistent slug — should show a proper 404.
-6. **Finished when:** the shot list seeks accurately and works without a mouse.
+3. **Files:** `app/properties/[slug]/page.tsx`, `components/VideoPlayer.tsx`, `components/PropertyFacts.tsx`.
+4. **Understand:** dynamic routes; why this page can stay a Server Component now that nothing seeks the video.
+5. **Test:** play the video and operate its controls by keyboard. Confirm the caption shows beneath it and survives the video failing to load. Test with a nonexistent slug — should show a proper 404.
+6. **Finished when:** the video and its caption work without a mouse, and the page holds up when the clip cannot play.
 ## Phase 5 — Enquiry pipeline
 1. **Building:** form, Server Action, validation, database write, `/admin`.
 2. **Why now:** the detail page exists to lead here.
@@ -585,9 +581,9 @@ Add Open Graph tags with the poster image, so a shared link previews with the pr
 ---
 # 15. FINAL MENTAL MODEL
 ## 15.1 In plain language
-> A buyer lands on Verge and sees a property video. They browse the listings, narrow them by city and budget, and open one property. They watch the walkthrough, jump to the kitchen using the shot list, read the facts, and send an enquiry. Verge sees that enquiry, attached to that exact property.
+> A buyer lands on Verge and sees a property video. They browse the listings, narrow them by city and budget, and open one property. They watch the clip of the room, read the facts, and send an enquiry. Verge sees that enquiry, attached to that exact property.
 ## 15.2 Technically
-> Server Component reads URL params → validates them → Prisma queries Postgres → filtered HTML is sent to the browser → user opens a property → a Client Component controls video seeking → the form calls a Server Action → the server validates → Prisma writes an Enquiry linked to the Property → the success state renders → `/admin` reads it back.
+> Server Component reads URL params → validates them → Prisma queries Postgres → filtered HTML is sent to the browser → user opens a property → watches the clip and reads its caption → the form calls a Server Action → the server validates → Prisma writes an Enquiry linked to the Property → the success state renders → `/admin` reads it back.
 ## 15.3 The one sentence to have ready
 **"The browser never receives the properties that didn't match the filter — the query runs on the server and the HTML arrives already filtered."**
 That single sentence demonstrates you understand the difference between a real backend and a visual effect. It is the most valuable thing in this document.
