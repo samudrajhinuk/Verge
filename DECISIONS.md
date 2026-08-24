@@ -435,3 +435,57 @@ the assets.
   because the data is seed data. Rejected because the habit is wrong — the
   same migration in production would destroy the enquiries the whole site
   exists to collect.
+
+---
+
+## Phase 4 — property detail page
+
+- Decision: `/properties/[slug]/page.tsx` stays a Server Component, and
+  `VideoPlayer` is a plain HTML `<video controls>` element rather than a
+  Client Component.
+- Why: the only reason a video needs JavaScript on this site is a shot list
+  seeking it. That's gone. Native `<video controls>` already gives keyboard
+  operation, play/pause, scrubbing and fullscreen for free, so adding a
+  Client Component here would be JavaScript with nothing to do.
+- Alternative rejected: keep `VideoPlayer` as a Client Component "in case
+  something needs it later." Rejected — CLAUDE.md's own component table
+  (§9) says Client only when something must respond to user interaction in
+  real time; speculative interactivity isn't a real requirement yet.
+- For production I would change: nothing, unless a real reason to control
+  playback from React shows up.
+
+- Decision: `videoCaption` feeds three surfaces from one write — the
+  `<figcaption>` under the video, the video element's `aria-label`, and (by
+  being the caption text itself) what's left visible if the clip never loads.
+- Why: this was decided when the field was added (Video model change,
+  previous entry) — worth restating here because Phase 4 is where it's
+  actually proven. Verified directly: pointed a live video element at a
+  nonexistent file and confirmed the poster stays and the caption is still
+  there, not just that the code looks like it should do that.
+- For production I would change: nothing.
+
+- Decision: A property with no `floor` (villas, row houses) simply omits
+  that row from the facts list, rather than showing "Floor: —".
+- Why: the field is genuinely not applicable, not unknown. A dash implies a
+  gap in the data; omitting the row says the question doesn't apply here.
+- For production I would change: nothing.
+
+- Decision: A slug that matches nothing calls Next's `notFound()`, which
+  currently renders Next's default 404 page rather than a styled one.
+- Why: a styled `not-found.tsx` is explicitly a Phase 7 file (CLAUDE.md
+  §14). Phase 4's actual requirement is a real 404 *status*, not a design —
+  confirmed with `curl -o /dev/null -w "%{http_code}"`, which returned 404,
+  not the visual check.
+- For production I would change: nothing yet — this is sequencing, not a gap.
+
+### Limitations, deliberately
+
+- Space-bar-to-play on the focused video was confirmed correct at the
+  markup level (the element is focusable, `readyState` is `4`, `.play()`
+  resolves) but I could not get my browser-automation tool's synthetic
+  keydown to trigger Chromium's native media keyboard shortcut — a tool
+  limitation, not something to fix in the code, since `controls` is a
+  built-in browser feature I didn't write keyboard handling for. Worth a
+  real keypress from you to be certain.
+- No enquiry form section yet — correctly scoped to Phase 5, per CLAUDE.md's
+  own file list for this phase.
