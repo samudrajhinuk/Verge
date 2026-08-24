@@ -26,6 +26,11 @@ const lexendDeca = Lexend_Deca({
 });
 
 export const metadata: Metadata = {
+  // The base every relative URL in metadata resolves against — canonical
+  // links, Open Graph images. Without this, Next.js falls back to
+  // http://localhost:3000 even in production, which is exactly the bug this
+  // fixes: it's set once, here, rather than every page hardcoding the domain.
+  metadataBase: new URL("https://verge.whoisneel.in"),
   title: {
     default: "Verge — Property",
     template: "%s — Verge",
