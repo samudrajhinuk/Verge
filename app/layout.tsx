@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Serif_Display, Lexend_Deca } from "next/font/google";
 import Link from "next/link";
 
+import { Footer } from "@/components/Footer";
 import { VergeIcon } from "@/components/VergeIcon";
 
 import "./globals.css";
@@ -81,22 +82,7 @@ export default function RootLayout({
 
         <main id="main">{children}</main>
 
-        <footer className="mt-24 border-t border-hairline">
-          <div className="mx-auto max-w-[1440px] px-6 py-12 md:px-12">
-            <p className="font-display text-heading text-ink">Verge</p>
-            <p className="mt-3 max-w-[34rem] text-body text-muted">
-              Ten residences, seven cities. Enquiries are answered by a person,
-              not a queue.
-            </p>
-            <p className="mt-6 text-meta text-muted">
-              <a href="mailto:sales@verge.example" className="focus-ring text-ink underline underline-offset-4">
-                sales@verge.example
-              </a>
-              <span className="mx-3 text-hairline">|</span>
-              +91 22 4000 1100
-            </p>
-          </div>
-        </footer>
+        <Footer />
       </body>
     </html>
   );

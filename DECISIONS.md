@@ -576,3 +576,67 @@ the assets.
   Enter. My browser tool's synthetic Tab/Enter presses do not register in
   this browser (the same limitation hit in Phase 4), so the actual keystrokes
   need a human to confirm.
+
+---
+
+## Phase 6 — homepage
+
+- Decision: The scrim's measured value is 65% ink opacity at its strongest
+  point, chosen against the actual worst case, not an assumption. Sampled
+  21 frames across hero.mp4 at 0.5s intervals, measured the average colour
+  of the lower-left region (where the text sits) in each, and found the
+  brightest was t=0 — the poster frame itself, relative luminance 0.19 in
+  that region (not the whole-frame average, which hid it). Composited ink
+  at 65% over that region in sRGB gives #202020, which is 12.5:1 against
+  `paper` text — comfortably past the 4.5:1 minimum for the button's
+  caption-sized text, the strictest element in the block.
+- Why the poster is the worst case, and why that matters: it's also the
+  most-seen frame, since it's what every visitor sees before the clip
+  loads or if it never does. Measuring anything else would have left the
+  most common case unverified.
+- Alternative rejected: measuring only the whole-frame average brightness.
+  Rejected after finding it hides local extremes — a bright building sits
+  exactly lower-left in the brightest frame, precisely where text needed
+  to sit legibly, and a whole-frame average would have missed it.
+
+- Decision: Hero is a Client Component for one reason — checking
+  `prefers-reduced-motion` before calling `.play()` — with no `autoplay`
+  attribute in the server-rendered HTML at all.
+- Why: same boundary already established by `PropertyMedia` in Phase 2.
+  The `poster` attribute (not JavaScript) is what makes the page look
+  complete immediately; confirmed with `curl`, no browser or JS involved —
+  the headline text and the poster path are both already in the raw HTML
+  response.
+- Honest limitation: I could not toggle the OS-level `prefers-reduced-motion`
+  media feature in my browser-automation tool to watch the video actually
+  stay paused — there's no media-emulation control exposed to me here. The
+  code path is a direct copy of the pattern already verified working in
+  Phase 2, and reads correctly, but this specific case needs a human check
+  (System Settings → Accessibility → Display → Reduce Motion, then reload).
+
+- Decision: Footer extracted to `components/Footer.tsx` and rendered once
+  from `app/layout.tsx`, replacing markup that was previously inline there
+  and used the old placeholder copy.
+- Why: "used on every page" only means something if it's one component,
+  not markup duplicated per page that could drift.
+
+- Decision: The shared nav stays a plain top bar above the hero, not
+  floating transparently over it, even though earlier draft language
+  pictured the nav sitting over the video.
+- Why: the nav is upstream — built in Phase 2, identical on every page —
+  and this phase's own brief says not to redesign anything upstream.
+  Making the homepage's nav behave differently from every other page's
+  would be exactly that.
+- Flagging rather than silently choosing: if the transparent-over-video nav
+  matters, it's a Phase 2/upstream change, not a Phase 6 one — worth a
+  explicit decision from you rather than me picking a side.
+
+### Limitations, deliberately
+
+- Reduced-motion verified by code review and pattern-match to already-tested
+  code, not by watching it happen — see above.
+- No Lighthouse or real slow-3G throttle was run; "readable before video
+  arrives" was verified more strictly than that instead — `curl`'ing the
+  route with no JavaScript and no video request shows the full headline and
+  the poster path already present in the HTML Next.js sends on the first
+  response.
