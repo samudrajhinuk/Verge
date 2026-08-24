@@ -105,6 +105,46 @@
   overflow-wrap: anywhere;
 }
 
+/* The property grid's four column steps (1/2/3/4 at 375/768/1280/1440),
+ * written as plain sequential media queries rather than stacked Tailwind
+ * breakpoint variants. Two of Tailwind's auto-generated variant blocks that
+ * are both true at once (e.g. an md: rule and a custom 1440px rule) don't
+ * reliably order smallest-to-largest when a non-default breakpoint is mixed
+ * in — found by testing this exact grid, where the wider rule kept losing to
+ * a narrower one purely on source order. Hand-written rules on one class
+ * cascade in the order they're written here, which is guaranteed. */
+.property-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+@media (min-width: 768px) {
+  .property-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1280px) {
+  .property-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1440px) {
+  .property-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* The filter sheet's slide-up. Duration is overridden to near-zero by the
+ * prefers-reduced-motion block below — that's what "wrapped in
+ * prefers-reduced-motion" means here, not a second code path. */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

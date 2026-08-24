@@ -264,3 +264,86 @@ the decisions made reviewing and finishing it, not decisions made from zero.
   tint was never solving a real problem.
 - For production I would change: nothing — these were bugs against the spec,
   not judgement calls.
+
+---
+
+## Phase 3 — /properties with server-side filtering
+
+- Decision: `lib/filters.ts` holds two functions the rest of the phase is
+  built around — `parseFilters` (URL params → a validated `Filters` object,
+  dropping anything invalid) and `buildWhere` (`Filters` → a Prisma `where`
+  clause) — plus the option lists (`CITIES`, `PROPERTY_TYPES`,
+  `BEDROOM_OPTIONS`, `PRICE_BANDS`) the filter UI reads from instead of
+  hand-typing.
+- Why: every caller — the real page query, the mobile sheet's live count,
+  and (later) any other place that needs to know what's filterable — goes
+  through the same two functions. There is exactly one definition of what a
+  valid filter is and one definition of what query it produces.
+- Alternative rejected: validating inline in `page.tsx` and writing the
+  Prisma query by hand there too. Rejected because the live count would then
+  need its own copy of the same rules, and the two would eventually disagree.
+- For production I would change: nothing in the shape — I'd add Zod or
+  similar for the parsing if the filter surface grew much larger than four
+  fields, purely to keep `parseFilters` itself shorter, not because the
+  hand-written version is wrong.
+
+- Decision: Bedrooms is "at least N", not "exactly N" (`bedrooms: { gte: n }`).
+- Why: that's how a real bedroom filter reads — someone who wants "3 bed"
+  usually means "3 or more fits my life", not exactly three and never four.
+- Alternative rejected: exact match. Rejected as the less useful default for
+  a buyer, and it isn't what the `${n}+ bed` label the UI shows would imply.
+- For production I would change: nothing.
+
+- Decision: **The live count.** The mobile sheet needs a result count for
+  selections that aren't in the URL yet — a count for filters that don't
+  exist as a real query anywhere. The chosen approach: a Server Action
+  (`app/properties/actions.ts`) that takes the sheet's in-progress values,
+  runs them through the exact same `parseFilters`/`buildWhere` the real page
+  uses, and returns `prisma.property.count(...)`. The sheet calls it 200ms
+  after the user stops changing something.
+- Why: this is the only option that can't drift from the real query, because
+  it *is* the real query — same two functions, just `count` instead of
+  `findMany`. It also never sends the property list to the browser, which
+  the fully-forbidden alternative would require.
+- Alternative rejected: fetch all ten properties once and re-run filter
+  logic in the browser for the live count. Rejected for two reasons — it is
+  a second implementation of `buildWhere` that could silently disagree with
+  the first, and it stops being honest the moment the catalogue is larger
+  than what's reasonable to ship to every visitor just to power a preview
+  number.
+- Trade-off accepted: a small amount of latency — one round trip to Postgres
+  per settled change, debounced — in exchange for the number always being
+  exactly what the server would return. On ten rows this is invisible; at a
+  much larger catalogue the debounce would need to be longer, or the count
+  could be approximated, but I'd only make that trade if it were ever
+  actually slow, not pre-emptively.
+
+- Decision: Resetting the sheet clears the *temporary* selections, not the
+  URL — Apply is still required afterward to actually clear the filters.
+- Why: keeping one rule ("nothing changes the URL except Apply") with no
+  exception is easier to hold in your head, and to explain, than a rule with
+  a carve-out for Reset specifically.
+- Alternative rejected: Reset applies immediately (clears and navigates in
+  one step). More convenient for a one-filter case, but it breaks the
+  temporary/applied distinction the brief specifically asked to keep obvious
+  — right after asserting it, the code would then quietly not follow it.
+- For production I would change: nothing — this is a one-extra-tap cost for
+  a clearer mental model, which is the right side of that trade here.
+
+- Decision: The four columns per breakpoint are a hand-written CSS class
+  (`.property-grid` in `globals.css`) with three sequential `@media` blocks,
+  not stacked Tailwind breakpoint variants.
+- Why: found, by testing this exact grid at 1440px, that two of Tailwind's
+  generated variant rules that are both true at once (an `md:` rule and a
+  rule on a non-default breakpoint) don't reliably cascade smallest-to-
+  largest — the narrower rule won by source order, not the wider one. Three
+  media queries on one class, written in order, cascade correctly by
+  definition; there's no variant-ordering behavior to depend on.
+- Alternative rejected: keep pushing on Tailwind variants (tried overriding
+  the `2xl` breakpoint token to 1440px, then tried stacked `min-[]`/`max-[]`
+  arbitrary variants) — both produced the same class of bug for the same
+  underlying reason. Rejected once the pattern repeated a second time rather
+  than trying a third variant-based fix.
+- For production I would change: nothing — this is the same technique
+  Tailwind's own generated CSS uses internally, just written by hand for the
+  one case where the automatic version proved unreliable.
