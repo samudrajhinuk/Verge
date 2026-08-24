@@ -489,3 +489,90 @@ the assets.
   real keypress from you to be certain.
 - No enquiry form section yet — correctly scoped to Phase 5, per CLAUDE.md's
   own file list for this phase.
+
+---
+
+## Phase 5 — enquiry pipeline
+
+- Decision: All validation that decides whether an enquiry is saved lives in
+  `app/actions/enquiry.ts`, on the server. The browser also checks (via
+  `type="email"`, `type="tel"`), but only to save the visitor a round trip.
+- Why: anything the browser enforces can be removed by editing the page, and
+  a form is just an HTTP request that anyone can send by hand. If the server
+  trusts the client, there is effectively no validation at all.
+- Proved, not assumed: submitted `a@b`, which the browser's own
+  `checkValidity()` returned `true` for, and the server still rejected it.
+  That is the client and server disagreeing, with the server winning — which
+  is the whole point.
+- For production I would change: swap the hand-written checks for a schema
+  library (Zod) once there are more than four fields, purely for brevity.
+
+- Decision: Phone numbers are normalised to `+91XXXXXXXXXX` before storing.
+  `+91 98765 43210`, `09876543210` and `9876543210` all become one string.
+- Why: they are the same number. Storing what was typed makes one person
+  look like three different leads, and makes "have we already spoken to
+  them?" unanswerable.
+- Alternative rejected: storing the raw input and normalising when reading.
+  Rejected — every future reader would have to remember to do it, and one
+  that forgets creates a duplicate.
+
+- Decision: Duplicate submissions are stopped in two places — a `useRef`
+  flag checked synchronously in the form's `onSubmit`, and a server check
+  that treats an identical enquiry (same property, email and message) within
+  60 seconds as one.
+- Why: **the first version of this was wrong and testing caught it.** The
+  button is disabled while `isPending`, which looked sufficient, but
+  `isPending` only takes effect after React re-renders — five clicks in one
+  tick all got through and created five rows. The ref closes that gap
+  because it is read synchronously; the server check is what actually
+  guarantees it, since neither client guard survives a second browser tab.
+- Honest limitation: the server check is read-then-write, so two genuinely
+  simultaneous requests could still both pass. It narrows the window rather
+  than closing it. Closing it properly needs an idempotency key sent with
+  the submission and a unique index on it — worth doing where money is
+  involved, disproportionate for a contact form.
+- For production I would change: add that idempotency key if enquiry volume
+  ever made a stray duplicate expensive to handle.
+
+- Decision: A failed database write returns a plain sentence
+  ("Something went wrong sending your enquiry. Please try again.") while the
+  real error goes to the server log via `console.error`.
+- Why: the visitor cannot act on a Postgres error, and showing one leaks the
+  schema to anyone who can make the write fail on purpose.
+- For production I would change: send the logged error to a real error
+  tracker rather than stdout, so failures are noticed without someone
+  reading logs.
+
+- Decision: The success message sits inside an `aria-live="polite"` region
+  that is always in the DOM and empty until there is something to say,
+  rather than one that appears together with its text.
+- Why: a live region inserted at the same moment as its content is
+  frequently missed by screen readers — the region has to already exist for
+  the change to be announced.
+
+- Decision: Fixed three pre-existing accent-filled buttons outside this
+  phase's file list, so the enquiry submit really is the only one on the
+  site: the filter sheet's Apply became outlined (which is what CLAUDE.md
+  §5.6 specified all along), the homepage's temporary styleguide link became
+  outlined, and the mobile Filter trigger became ink-filled rather than
+  accent-filled.
+- Why: the rule is that the accent fill marks the single primary action per
+  page. Three other buttons were competing with it.
+- Judgement call worth flagging: the Filter trigger is still *solid*, just
+  ink rather than accent. It is fixed over scrolling video and an outlined
+  transparent button is unreadable there. Ink is the site's own dark surface
+  and the colour of the sheet it opens, so it stays legible without claiming
+  the accent.
+
+### Limitations, deliberately
+
+- The ten property descriptions are now roughly 20 words each, where
+  CLAUDE.md §4.3 Section 5 asks for 60–80. The supplied copy is written to
+  BRAND.md's voice rules and was given as final, so the word count in §4.3
+  is the thing that is now out of date, not the copy.
+- Keyboard operation was verified structurally, not by literally pressing
+  keys: DOM order matches visual order, every field is focusable with a real
+  `<label>`, no positive `tabindex`, and no custom key handlers intercepting
+  Enter. My browser tool's synthetic Tab/Enter presses do not register in
+  this browser (the same limitation hit in Phase 4), so the actual keystrokes
+  need a human to confirm.

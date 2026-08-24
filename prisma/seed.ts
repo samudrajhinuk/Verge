@@ -53,7 +53,7 @@ const properties: SeedProperty[] = [
     facing: "West-facing",
     possession: "Ready to move",
     description:
-      "Open on three sides, with the sea visible from the west elevation. 2,180 sq ft carpet. IPS-finished concrete floors, full-height glazing along the living room. Built 2019. Eight minutes to Bandra station on foot. Two covered parking bays.",
+      "Three bedrooms on the 14th of 22 floors, west-facing. The sea shows from the west elevation. 2,180 sq ft. Ready to move.",
     clip: "property-06",
     videoCaption: "Living room",
     createdAt: new Date("2026-01-06T09:00:00.000Z"),
@@ -73,7 +73,7 @@ const properties: SeedProperty[] = [
     facing: "West-facing",
     possession: "December 2026",
     description:
-      "A duplex across the top two floors. 5,400 sq ft with a 900 sq ft private terrace facing the sea link. Italian marble on the lower level, teak above. Four covered bays and a service lift landing inside the unit.",
+      "A duplex across the top two floors, 41 and 42 of 42. Five bedrooms, 5,400 sq ft, west-facing over the sea. Handover December 2026.",
     clip: "property-10",
     videoCaption: "Living and dining areas",
     createdAt: new Date("2026-01-07T09:00:00.000Z"),
@@ -93,7 +93,7 @@ const properties: SeedProperty[] = [
     facing: "North-East facing",
     possession: "Ready to move",
     description:
-      "1,120 sq ft in a 1998 building, stripped and retrofitted in 2021. Rewired, replumbed, original mosaic floors kept and polished. Corner unit with cross-ventilation on two sides. 400 m from the metro. One parking bay.",
+      "Two bedrooms in Indiranagar, second of four floors, north-east facing. 1,120 sq ft. Ready to move.",
     clip: "property-08",
     videoCaption: "Kitchen",
     createdAt: new Date("2026-01-08T09:00:00.000Z"),
@@ -113,7 +113,7 @@ const properties: SeedProperty[] = [
     facing: "North-facing",
     possession: "Ready to move",
     description:
-      "3,600 sq ft built on a 6,000 sq ft plot. Four bedrooms, all en suite, three facing the rear garden. Kota stone on the ground floor, oak above. Borewell plus a Cauvery connection. Built 2011, roof waterproofed 2023.",
+      "A four-bedroom villa in Whitefield, north-facing, 3,600 sq ft across its own plot. Four bathrooms. Ready to move.",
     clip: "property-01",
     videoCaption: "Dining area, natural light",
     createdAt: new Date("2026-01-09T09:00:00.000Z"),
@@ -133,7 +133,7 @@ const properties: SeedProperty[] = [
     facing: "South-facing",
     possession: "Ready to move",
     description:
-      "First-floor builder unit of 3,200 sq ft with an independent entrance and 1,100 sq ft of terrace rights. South-facing. Servant quarter with a separate stair. Freehold title. Two covered parking spaces.",
+      "Four bedrooms on the first floor of three, south-facing. 3,200 sq ft in Vasant Vihar. Ready to move.",
     clip: "property-04",
     videoCaption: "Reception room",
     createdAt: new Date("2026-01-10T09:00:00.000Z"),
@@ -153,7 +153,7 @@ const properties: SeedProperty[] = [
     facing: "North-facing",
     possession: "Ready to move",
     description:
-      "620 sq ft, one bedroom, on the top floor. Single-loaded corridor, so the whole unit takes north light. 1994 shell with interiors redone in 2022. No lift. Ten minutes on foot to Bund Garden Road.",
+      "One bedroom in Koregaon Park, top floor of four, north-facing. 620 sq ft. Ready to move.",
     clip: "property-09",
     videoCaption: "Bedroom",
     createdAt: new Date("2026-01-11T09:00:00.000Z"),
@@ -173,7 +173,7 @@ const properties: SeedProperty[] = [
     facing: "West-facing",
     possession: "Ready to move",
     description:
-      "1,850 sq ft over three levels with a 300 sq ft rear court. End unit, so one long wall stays open. Concrete frame, completed 2016. Gated lane of eleven houses. Two parking bays in the forecourt.",
+      "A three-bedroom row house in Baner, west-facing, 1,850 sq ft over its own floors. Ready to move.",
     clip: "property-02",
     videoCaption: "Entrance hallway",
     createdAt: new Date("2026-01-12T09:00:00.000Z"),
@@ -193,7 +193,7 @@ const properties: SeedProperty[] = [
     facing: "East-facing",
     possession: "Ready to move",
     description:
-      "4,800 sq ft on a 9,000 sq ft plot, built 2008 and taken back to the frame in 2022. Five bedrooms, two of them on the ground floor. Granite plinth, lime-plastered walls. Mature rain trees along the north boundary.",
+      "A five-bedroom villa in Jubilee Hills, east-facing, 4,800 sq ft. Five bathrooms. Ready to move.",
     clip: "property-03",
     videoCaption: "Living room, marble detailing",
     createdAt: new Date("2026-01-13T09:00:00.000Z"),
@@ -213,7 +213,7 @@ const properties: SeedProperty[] = [
     facing: "East-facing",
     possession: "March 2027",
     description:
-      "1,340 sq ft, east-facing, 1.2 km from Elliot's Beach. The Madras terrace roof over the living room was retained in the 2019 refit. Ceiling height 11 ft. Covered parking for one car and two two-wheelers.",
+      "Two bedrooms in Adyar, third of five floors, east-facing. 1,340 sq ft. Handover March 2027.",
     clip: "property-05",
     videoCaption: "Principal bedroom",
     createdAt: new Date("2026-01-14T09:00:00.000Z"),
@@ -235,7 +235,7 @@ const properties: SeedProperty[] = [
     facing: "West-facing",
     possession: "August 2026",
     description:
-      "2,950 sq ft on a 12,000 sq ft plot holding 31 existing coconut palms. Laterite walls and a Mangalore tile roof, restored in 2021 to the original 1962 footprint. Well water with a municipal backup. 4 km to Anjuna, 9 km to Mapusa.",
+      "A four-bedroom villa in Assagao, west-facing, 2,950 sq ft. Handover August 2026.",
     clip: "property-07",
     videoCaption: "Bedroom, west-facing",
     createdAt: new Date("2026-01-15T09:00:00.000Z"),

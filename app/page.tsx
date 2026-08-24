@@ -14,7 +14,7 @@ export default function HomePage() {
       <p className="mt-10">
         <Link
           href="/styleguide"
-          className="focus-ring inline-block bg-accent px-6 py-4 text-caption text-paper uppercase"
+          className="focus-ring inline-block border border-ink px-6 py-4 text-caption text-ink uppercase"
         >
           Open the styleguide
         </Link>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { EnquiryForm } from "@/components/EnquiryForm";
 import { PropertyFacts } from "@/components/PropertyFacts";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { formatPriceInr } from "@/lib/format-price";
@@ -66,6 +67,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </div>
 
           <p className="mt-10 max-w-[34rem] text-body text-muted">{property.description}</p>
+
+          <div className="mt-16">
+            <EnquiryForm propertyId={property.id} propertyName={property.name} />
+          </div>
         </div>
       </div>
     </div>

@@ -128,7 +128,12 @@ export function FilterSheet({ currentFilters, resultCount }: FilterSheetProps) {
         ref={triggerRef}
         type="button"
         onClick={open}
-        className="focus-ring fixed inset-x-6 bottom-6 z-40 flex min-h-[44px] items-center justify-center bg-accent text-caption text-paper uppercase"
+        // Ink, not accent: the accent fill is reserved for the enquiry submit,
+        // the one primary action on the site. This sits fixed over scrolling
+        // video, so it needs an opaque ground to stay legible — ink is the
+        // site's own dark surface (the sheet it opens is ink too), which keeps
+        // it solid without competing with the one accent button.
+        className="focus-ring fixed inset-x-6 bottom-6 z-40 flex min-h-[44px] items-center justify-center bg-ink text-caption text-paper uppercase"
       >
         {activeCount > 0 ? `Filter (${activeCount})` : "Filter"}
       </button>
@@ -184,7 +189,7 @@ export function FilterSheet({ currentFilters, resultCount }: FilterSheetProps) {
               <button
                 type="button"
                 onClick={apply}
-                className="focus-ring min-h-[44px] flex-1 bg-accent text-caption text-paper uppercase"
+                className="focus-ring min-h-[44px] flex-1 border border-paper text-caption text-paper uppercase"
               >
                 Apply
               </button>

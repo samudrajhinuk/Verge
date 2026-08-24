@@ -180,6 +180,7 @@ Same as homepage.
 - **Layout:** plain table, hairline rules, no styling ambition.
 - **Prominent:** nothing. This page should look deliberately utilitarian.
 ---
+> **See `BRAND.md` before writing any copy or any new repeating visual pattern.** It sits above this section — voice (what words are allowed to do) and visual rhyming (the three gestures that recur site-wide). §5 below is tokens: colour, type, spacing. BRAND.md is how those tokens get used consistently. Added 2026-08-24.
 # 5. VISUAL DESIGN
 ## 5.1 Colour palette
 | Name | Hex | Used for |
