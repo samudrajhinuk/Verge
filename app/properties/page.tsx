@@ -20,6 +20,13 @@ export const metadata: Metadata = {
   alternates: { canonical: "/properties" },
 };
 
+// Reading searchParams already makes this dynamic by Next.js's own inference,
+// which is exactly the kind of implicit behaviour that let /styleguide get
+// prerendered at build time without anyone deciding that on purpose. Stated
+// explicitly so it can't silently regress: this page depends on live,
+// filterable data and must run per request, never once at build time.
+export const dynamic = "force-dynamic";
+
 type PropertiesPageProps = {
   searchParams: Promise<RawParams>;
 };

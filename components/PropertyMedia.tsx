@@ -54,7 +54,7 @@ export function PropertyMedia({
     return () => observer.disconnect();
   }, [videoUrl]);
 
-  // Nothing to show but the caption — the state the styleguide exercises.
+  // Nothing to show but the caption.
   if (!videoUrl && !posterUrl) {
     return (
       <div className="flex aspect-[9/16] w-full items-end bg-ink p-4">

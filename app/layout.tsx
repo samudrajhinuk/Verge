@@ -76,11 +76,6 @@ export default function RootLayout({
                   Properties
                 </Link>
               </li>
-              <li>
-                <Link href="/styleguide" className="focus-ring text-muted hover:text-ink">
-                  Styleguide
-                </Link>
-              </li>
             </ul>
           </nav>
         </header>

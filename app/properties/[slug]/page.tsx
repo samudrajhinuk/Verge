@@ -7,6 +7,13 @@ import { VideoPlayer } from "@/components/VideoPlayer";
 import { formatPriceInr } from "@/lib/format-price";
 import { prisma } from "@/lib/prisma";
 
+// No generateStaticParams, so this is dynamic by Next.js's own inference
+// today — but that's implicit, and implicit is exactly what let /styleguide
+// get prerendered at build time without anyone deciding that on purpose.
+// Stated explicitly so it can't silently regress: a property page reads live
+// data (an enquiry could arrive between requests) and must run per request.
+export const dynamic = "force-dynamic";
+
 type PropertyPageProps = {
   params: Promise<{ slug: string }>;
 };
