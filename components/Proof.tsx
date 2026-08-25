@@ -1,4 +1,7 @@
-const FACTS = ["Ten residences", "Four cities", "Possession within eighteen months"];
+// Counted from the seed data, not from CLAUDE.md 4.1's illustrative example —
+// which is where the earlier (wrong) "Four cities" came from. Ten properties
+// across Mumbai, Bengaluru, Delhi, Pune, Hyderabad, Chennai and Goa.
+const FACTS = ["Ten residences", "Seven cities", "Possession within eighteen months"];
 
 // Plain text, set large, left-anchored. No icons, no cards, no three-column
 // grid with a symbol above each item — CLAUDE.md §5.15 names that pattern

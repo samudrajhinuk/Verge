@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   // is already complete and shouldn't get a second " — Verge" appended.
   title: { absolute: "Verge — Property, on video" },
   description:
-    "Ten residential developments across four Indian cities, each presented on a single vertical video.",
+    "Ten residential developments across seven Indian cities, each presented on a single vertical video.",
 };
 
 export default function HomePage() {
