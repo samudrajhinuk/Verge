@@ -52,10 +52,12 @@ export default function RootLayout({
           Skip to content
         </a>
 
-        <header className="border-b border-hairline">
+        {/* Height comes from --nav-h rather than from padding plus content,
+            so the hero can subtract exactly this and the two stay in step. */}
+        <header className="h-[var(--nav-h)] border-b border-hairline">
           <nav
             aria-label="Primary"
-            className="mx-auto flex max-w-[1440px] items-center justify-between px-6 py-4 md:px-12"
+            className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-6 md:px-12"
           >
             {/* Icon only in the nav — the wordmark lives in the footer, the
                 page title and the enquiry confirmation. */}

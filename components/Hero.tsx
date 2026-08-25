@@ -20,7 +20,10 @@ export function Hero() {
   }, []);
 
   return (
-    <section className="relative h-[100dvh] min-h-[560px] w-full overflow-hidden bg-ink">
+    // Viewport height minus the header above it, not the whole viewport —
+    // see the --nav-h note in globals.css. min-h keeps a floor on very short
+    // windows, where losing the CTA to the fold matters more than filling it.
+    <section className="relative h-[calc(100dvh-var(--nav-h))] min-h-[560px] w-full overflow-hidden bg-ink">
       {/* No autoplay attribute — see the effect above. The poster still makes
           the page look complete immediately, and stays put if the clip never
           loads or motion is reduced. Black and white by intent: brand

@@ -66,6 +66,28 @@
 }
 
 @layer base {
+  /* The header's exact height, in one place.
+   *
+   * The hero is a full-viewport section, but it renders *below* the header
+   * rather than under it (the nav is a plain top bar on every page — see
+   * DECISIONS.md, Phase 6 — not a transparent overlay). So a naive 100dvh
+   * hero makes the page exactly one header taller than the screen, which
+   * pushed the hero's CTA to within 11px of the bottom edge at 375x812 —
+   * underneath the home indicator on any modern iPhone.
+   *
+   * Both the header and the hero read this value, so they cannot drift:
+   * the header is sized *by* it rather than measured for it. */
+  :root {
+    --nav-h: 53px;
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      /* The mark steps up from 20px to 22px at md, so the bar does too. */
+      --nav-h: 55px;
+    }
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
   }
